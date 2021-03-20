@@ -26,13 +26,35 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  bool isClicked = false;
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  AnimationController animationController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+      vsync: this,
+      duration: Duration(
+        seconds: 15,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    animationController?.dispose();
+  }
 
   void _incrementCounter() {
-    setState(() {
-      isClicked = !isClicked;
-    });
+    if (animationController.isAnimating) {
+      animationController.stop(canceled: false);
+    } else {
+      animationController.repeat();
+    }
   }
 
   final duration = Duration(milliseconds: 1500);
@@ -49,22 +71,13 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Center(
-              child: TweenAnimationBuilder(
-                duration: duration,
-                tween: ColorTween(
-                  begin: Colors.blue,
-                  end: Colors.red,
+              child: RotationTransition(
+                turns: animationController,
+                child: Image.asset(
+                  'assets/cat.png',
+                  height: 256.0,
+                  width: 256.0,
                 ),
-                builder: (context, color, child) {
-                  return Container(
-                    height: 200.0,
-                    width: 200.0,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(48.0),
-                      color: color,
-                    ),
-                  );
-                },
               ),
             ),
           ],
