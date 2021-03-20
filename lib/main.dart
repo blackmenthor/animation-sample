@@ -29,6 +29,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
   AnimationController animationController;
+  Animation val;
 
   @override
   void initState() {
@@ -37,7 +38,15 @@ class _MyHomePageState extends State<MyHomePage>
     animationController = AnimationController(
       vsync: this,
       duration: Duration(
-        seconds: 15,
+        seconds: 5,
+      ),
+      lowerBound: 0.05,
+      upperBound: 0.75,
+    );
+    val = Tween(begin: 0, end: 0.75).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.bounceOut,
       ),
     );
   }
@@ -65,26 +74,33 @@ class _MyHomePageState extends State<MyHomePage>
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Center(
-              child: ScaleTransition(
-                scale: animationController,
-                child: RotationTransition(
-                  turns: animationController,
-                  child: Image.asset(
-                    'assets/cat.png',
-                    height: 256.0,
-                    width: 256.0,
-                  ),
-                ),
+      body: Stack(
+        alignment: Alignment.center,
+        children: <Widget>[
+          AnimatedBuilder(
+            animation: val,
+            child: Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blueAccent,
               ),
             ),
-          ],
-        ),
+            builder: (_, child) {
+              final value = val.value;
+              final height = MediaQuery.of(context).size.height;
+              final width = MediaQuery.of(context).size.width;
+              var top = (value * height);
+              final right = (value * width);
+              return Positioned(
+                top: top,
+                right: right,
+                child: child,
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
