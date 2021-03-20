@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 void main() {
   runApp(MyApp());
@@ -26,13 +27,26 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  AnimationController _controller;
   bool isClicked = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   void _incrementCounter() {
-    setState(() {
-      isClicked = !isClicked;
-    });
+    _controller.repeat();
   }
 
   final duration = Duration(milliseconds: 1500);
@@ -44,33 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: Stack(
-          children: <Widget>[
-            Center(
-              child: AnimatedContainer(
-                height: isClicked ? 200.0 : 100.0,
-                width: isClicked ? 200.0 : 100.0,
-                decoration: BoxDecoration(
-                  color: isClicked ? Colors.blue : Colors.lightBlueAccent,
-                  borderRadius: BorderRadius.circular(
-                    isClicked ? 48.0 : 0.0,
-                  ),
-                ),
-                duration: duration,
-              ),
-            ),
-            AnimatedPositioned(
-              left: 16.0,
-              bottom:
-                  isClicked ? MediaQuery.of(context).size.height * 0.75 : 16.0,
-              child: Icon(
-                Icons.arrow_upward,
-                size: 48.0,
-                color: isClicked ? Colors.blue : Colors.blueAccent,
-              ),
-              duration: duration,
-            ),
-          ],
+        child: Lottie.asset(
+          'assets/animation.json',
+          controller: _controller,
+          onLoaded: (composition) {
+            // Configure the AnimationController with the duration of the
+            // Lottie file and start the animation.
+            _controller
+              ..duration = composition.duration
+              ..repeat();
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
