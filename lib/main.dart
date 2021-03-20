@@ -71,12 +71,15 @@ class _MyHomePageState extends State<MyHomePage>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Center(
-              child: RotationTransition(
-                turns: animationController,
-                child: Image.asset(
-                  'assets/cat.png',
-                  height: 256.0,
-                  width: 256.0,
+              child: ScaleTransition(
+                scale: animationController,
+                child: RotationTransition(
+                  turns: animationController,
+                  child: Image.asset(
+                    'assets/cat.png',
+                    height: 256.0,
+                    width: 256.0,
+                  ),
                 ),
               ),
             ),
